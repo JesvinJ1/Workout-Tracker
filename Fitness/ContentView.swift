@@ -31,7 +31,6 @@ class WorkoutViewModel: ObservableObject {
         }
     }
     
-    // Previously: We used addExercise to add exercises
     func addLog(to exercise: Exercise, in workout: Workout, sets: Int, reps: Int, weight: Double) {
         if let workoutIndex = workouts.firstIndex(where: { $0.id == workout.id }),
            let exerciseIndex = workouts[workoutIndex].exercises.firstIndex(where: { $0.id == exercise.id }) {
