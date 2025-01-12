@@ -1,4 +1,5 @@
 Workout Tracking App
+
 Developed by: Jesvin Jerry
 
 The intention of this app is give an easy and most importantly a free way to track your progress in the gym.
