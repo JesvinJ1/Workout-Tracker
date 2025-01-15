@@ -25,12 +25,13 @@ struct ExerciseLog: Identifiable, Codable {
 
 // MARK: - ViewModel
 class WorkoutViewModel: ObservableObject {
-    @Published var workouts: [Workout] = [] {
+    @Published var workouts: [Workout] = [] { // list of all workouts
         didSet {
-            saveWorkouts()
+            saveWorkouts() // runs the save workout funct. whenever the list changes
         }
     }
     
+    // adds a entry to a specific exercise in a specified workout
     func addLog(to exercise: Exercise, in workout: Workout, sets: Int, reps: Int, weight: Double) {
         if let workoutIndex = workouts.firstIndex(where: { $0.id == workout.id }),
            let exerciseIndex = workouts[workoutIndex].exercises.firstIndex(where: { $0.id == exercise.id }) {
@@ -39,18 +40,19 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
-
     private let fileName = "workouts.json"
 
     init() {
         loadWorkouts()
     }
-
+    
+    // adds a new workout
     func addWorkout(name: String) {
         let newWorkout = Workout(name: name, date: Date(), exercises: [])
         workouts.append(newWorkout)
     }
 
+    // adds a new exercise to a workout or it will add it to an exisiting exercise
     func addExercise(to workout: Workout, name: String, sets: Int, reps: Int, weight: Double) {
         if let index = workouts.firstIndex(where: { $0.id == workout.id }) {
             let newLog = ExerciseLog(date: Date(), sets: sets, reps: reps, weight: weight)
@@ -63,6 +65,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
+    // func. to save workouts to the JSON file
     private func saveWorkouts() {
         do {
             let url = getFileURL()
@@ -73,6 +76,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
+    // loads workouts from the JSON file
     private func loadWorkouts() {
         do {
             let url = getFileURL()
@@ -84,6 +88,7 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
+    // gets the file URL
     private func getFileURL() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0].appendingPathComponent(fileName)
@@ -99,14 +104,14 @@ struct AddWorkoutView: View {
     var body: some View {
         NavigationView {
             Form {
-                TextField("Workout Name", text: $workoutName)
+                TextField("Workout Name", text: $workoutName) // workout name input field
             }
             .navigationTitle("Add Workout")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         if !workoutName.isEmpty {
-                            viewModel.addWorkout(name: workoutName)
+                            viewModel.addWorkout(name: workoutName) // save the new workout
                             dismiss()
                         }
                     }
@@ -130,7 +135,7 @@ struct AddExerciseView: View {
     var body: some View {
         NavigationView {
             Form {
-                TextField("Exercise Name", text: $exerciseName)
+                TextField("Exercise Name", text: $exerciseName) // exercise name input field
                     .autocapitalization(.words)
             }
             .navigationTitle("Add Exercise")
@@ -140,7 +145,7 @@ struct AddExerciseView: View {
                         if !exerciseName.isEmpty {
                             let newExercise = Exercise(name: exerciseName, history: [])
                             if let index = viewModel.workouts.firstIndex(where: { $0.id == workout.id }) {
-                                viewModel.workouts[index].exercises.append(newExercise)
+                                viewModel.workouts[index].exercises.append(newExercise) // add the new exercise
                             }
                             dismiss()
                         }
@@ -169,7 +174,7 @@ struct WorkoutDetailView: View {
                         .font(.headline)
                 }
             }
-            .onDelete(perform: deleteExercise)
+            .onDelete(perform: deleteExercise) // ability to delete exercise
         }
         .navigationTitle(workout.name)
         .toolbar {
@@ -183,7 +188,7 @@ struct WorkoutDetailView: View {
             AddExerciseView(workout: workout, viewModel: viewModel)
         }
     }
-    // Delete exercise from the workout
+    // delete exercise from the workout
         private func deleteExercise(at offsets: IndexSet) {
             if let index = viewModel.workouts.firstIndex(where: { $0.id == workout.id }) {
                 viewModel.workouts[index].exercises.remove(atOffsets: offsets)
@@ -243,12 +248,12 @@ struct ExerciseDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: ExerciseChartView(exercise: exercise)) {
                     Label("Chart", systemImage: "chart.bar.xaxis") // System chart icon
-                        .font(.headline) // Make the text bold
-                        .foregroundColor(.blue) // Make the text color blue for prominence
-                        .padding(8) // Add some padding around the button
-                        .background(Color.white) // Give it a background color for prominence
-                        .clipShape(Capsule()) // Round the corners for a pill shape
-                        .shadow(radius: 5) // Add shadow for depth
+                        .font(.headline)
+                        .foregroundColor(.blue)
+                        .padding(8)
+                        .background(Color.white)
+                        .clipShape(Capsule())
+                        .shadow(radius: 5)
                 }
             }
         }
@@ -262,15 +267,15 @@ struct ExerciseChartView: View {
 
     var body: some View {
         VStack {
-            Text("History for \(exercise.name)")
+            Text("History for \(exercise.name)") // title for chart exercise
                 .font(.title)
                 .padding()
 
             Chart {
                 ForEach(exercise.history) { log in
                     LineMark(
-                        x: .value("Date", log.date),
-                        y: .value("Weight", log.weight)
+                        x: .value("Date", log.date), // x axis
+                        y: .value("Weight", log.weight) // y axis
                     )
                 }
             }
@@ -295,7 +300,7 @@ struct ContentView: View {
                             .font(.headline)
                     }
                 }
-                .onDelete(perform: deleteWorkout)
+                .onDelete(perform: deleteWorkout) // ability to delete workouts
             }
             .navigationTitle("Workouts")
             .toolbar {
@@ -311,6 +316,7 @@ struct ContentView: View {
         }
     }
     
+    // deletes workout from list
     private func deleteWorkout(at offsets: IndexSet) {
             viewModel.workouts.remove(atOffsets: offsets)
         }
@@ -334,6 +340,6 @@ struct WorkoutApp: App {
     }
 }
 
-#Preview {
+/*#Preview {
     ContentView()
-}
+}*/
