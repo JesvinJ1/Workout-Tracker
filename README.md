@@ -1,4 +1,4 @@
-Workout/Fitness Tracking App
+Workout Tracking App
 
 The intention of this app is give an easy and most importantly a free way to track your progress in the gym.
 Most gym goers use notes, or another simillar app, to track their exercises along with reps, sets, and weight.
